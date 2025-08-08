@@ -1,0 +1,139 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spam Email Classification Project</title>
+    <link rel="stylesheet" href="../master.css">
+</head>
+<body>
+    <div>
+        <p><a href="../index.html">Return to Main Page</a></p>
+
+        <h1>Machine Learning for Enhanced Email Spam Classification</h1>
+
+        <p>I built this project to tackle the annoyance of spam emails clogging up our inboxes. Sorting through junk emails about fake prizes or dodgy offers wastes time and can even be risky. My aim was to create a smart system that automatically filters out spam while keeping genuine emails safe, avoiding mistakes where important messages get flagged as spam (known as false positives).</p>
+
+        <h2>Why I Did This</h2>
+
+        <p>Spam emails aren’t just irritating—they can trick people into clicking harmful links or sharing personal details. I wanted to make inboxes safer and easier to manage by using machine learning to spot spam accurately. This way, users can focus on emails that matter without worrying about missing something important due to overzealous filtering.</p>
+
+        <h2>Methods I Used</h2>
+
+        <p>
+            I used a dataset of 5,572 text messages from Kaggle, labelled as spam or ham (non-spam). Here’s how I built the spam filter:
+        </p>
+
+        <p style="margin-left: 20px;">
+            - <strong>Data Preparation:</strong> I cleaned the dataset by removing unnecessary columns and renaming the key ones to “Spam/Ham” and “Content”. I also turned labels into numbers (1 for spam, 0 for ham) for the computer to process.
+        </p>
+        <p style="margin-left: 20px;">
+            Below is the code I used to clean the data:
+        </p>
+        <p style="margin-left: 40px;">
+# Remove all unnamed columns (these are mostly empty)<br>
+df.drop(columns={'Unnamed: 2','Unnamed: 3','Unnamed: 4'}, inplace=True)<br>
+<br>
+# Rename v1 & v2 columns to Spam/Ham and Content<br>
+df.rename(columns={"v1": "Spam/Ham", "v2": "Content"}, inplace=True)<br>
+<br>
+# Convert labels to binary: 1 for spam, 0 for ham<br>
+df['Spam'] = df['Spam/Ham'].apply(lambda x: 1 if x == 'spam' else 0)
+        </p>
+
+        <p style="margin-left: 20px;">
+            - <strong>Text Processing:</strong> Using a Python library called NLTK, I removed punctuation and common words like “and” or “the” (stopwords), and made all text lowercase. This helps the system focus on meaningful words.
+        </p>
+        <p style="margin-left: 20px;">
+            - <strong>Turning Words into Numbers:</strong> I used a tool called CountVectorizer to convert text into a numerical format, counting word occurrences in each message.
+        </p>
+        <p style="margin-left: 20px;">
+            - <strong>Building the Model:</strong> I chose a machine learning method called Multinomial Naive Bayes, which is great for text tasks. I trained it on 80% of the data and tested it on 20%. Here’s the code for setting up and training the model:
+        </p>
+        <p style="margin-left: 40px;">
+from sklearn.pipeline import Pipeline<br>
+from sklearn.feature_extraction.text import CountVectorizer<br>
+from sklearn.naive_bayes import MultinomialNB<br>
+from sklearn.model_selection import train_test_split<br>
+<br>
+# Create a pipeline with CountVectorizer and Naive Bayes<br>
+clf = Pipeline([<br>
+    ('vectorizer', CountVectorizer()),<br>
+    ('nb', MultinomialNB())<br>
+])<br>
+<br>
+# Split data into training and testing sets<br>
+X_train, X_test, y_train, y_test = train_test_split(df['Content'], df['Spam'], test_size=0.2, random_state=42)<br>
+<br>
+# Train the model<br>
+clf.fit(X_train, y_train)
+        </p>
+
+        <p style="margin-left: 20px;">
+            - <strong>Testing the System:</strong> I tested the system with examples like a fake prize email (spam) and a friendly message (ham), plus edge cases like empty or long emails. Here’s the testing code:
+        </p>
+        <p style="margin-left: 40px;">
+import unittest<br>
+<br>
+def classify_email(content):<br>
+    result = clf.predict([content])<br>
+    return "This is a Spam Email!" if result == 1 else "This is a Ham Email!"<br>
+<br>
+class TestSpamDetection(unittest.TestCase):<br>
+    def test_known_spam(self):<br>
+        message_content = "Congratulations! You've won a free iPhone!"<br>
+        result = classify_email(message_content)<br>
+        self.assertEqual(result, "This is a Spam Email!")<br>
+    <br>
+    def test_known_ham(self):<br>
+        message_content = "Hi, how are you doing today?"<br>
+        result = classify_email(message_content)<br>
+        self.assertEqual(result, "This is a Ham Email!")<br>
+<br>
+# Run tests<br>
+unittest.TextTestRunner().run(unittest.TestLoader().loadTestsFromTestCase(TestSpamDetection))
+        </p>
+
+        <h2>Keeping Inboxes Clean and Accurate</h2>
+
+        <p>
+            The system achieved a 98% accuracy rate, correctly identifying 98% of emails as spam or ham. The table below shows the detailed results:
+        </p>
+
+        <table style="margin-left: 20px; border-collapse: collapse; border: 1px solid #666;">
+            <tr style="border: 1px solid #666;">
+                <th style="border: 1px solid #666; padding: 8px;"></th>
+                <th style="border: 1px solid #666; padding: 8px;">Precision</th>
+                <th style="border: 1px solid #666; padding: 8px;">Recall</th>
+                <th style="border: 1px solid #666; padding: 8px;">F1-Score</th>
+                <th style="border: 1px solid #666; padding: 8px;">Support</th>
+            </tr>
+            <tr style="border: 1px solid #666;">
+                <td style="border: 1px solid #666; padding: 8px;">Ham (0)</td>
+                <td style="border: 1px solid #666; padding: 8px;">0.99</td>
+                <td style="border: 1px solid #666; padding: 8px;">0.99</td>
+                <td style="border: 1px solid #666; padding: 8px;">0.99</td>
+                <td style="border: 1px solid #666; padding: 8px;">1594</td>
+            </tr>
+            <tr style="border: 1px solid #666;">
+                <td style="border: 1px solid #666; padding: 8px;">Spam (1)</td>
+                <td style="border: 1px solid #666; padding: 8px;">0.93</td>
+                <td style="border: 1px solid #666; padding: 8px;">0.90</td>
+                <td style="border: 1px solid #666; padding: 8px;">0.92</td>
+                <td style="border: 1px solid #666; padding: 8px;">216</td>
+            </tr>
+            <tr style="border: 1px solid #666;">
+                <td style="border: 1px solid #666; padding: 8px;"><strong>Accuracy</strong></td>
+                <td style="border: 1px solid #666; padding: 8px;" colspan="4">0.98</td>
+            </tr>
+        </table>
+        <br>
+        <p>
+            This high accuracy, especially the 99% precision for ham, means the system rarely mistakes genuine emails for spam, reducing false positives. The 90% recall for spam shows it catches most junk emails, keeping inboxes clean. By carefully processing text and using a reliable model, the system ensures important emails stay visible while filtering out spam.
+        </p>
+
+        <p>
+            This project proves machine learning can make our digital lives safer and less cluttered. It’s a step towards cleaner inboxes with fewer errors, and I’m keen to keep refining it!
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malware Traffic Forensics Using Scapy</title>
+    <link rel="stylesheet" href="../master.css">
+</head>
+<body>
+    <div>
+        <p><a href="../index.html">Return to Main Page</a></p>
+
+        <h1>Malware Traffic Forensics Using Scapy</h1>
+
+        <p>
+            I created this project to help spot harmful activity in network traffic, such as malware secretly communicating with attackers or stealing data. Networks carry vast amounts of information, and finding threats within this data is a tricky task. My aim was to build a tool using Scapy, a powerful Python library, to examine network packets and catch suspicious behaviour without mistakenly flagging normal activity as malicious, which is known as a false positive.
+        </p>
+
+        <h2>Why I Did This</h2>
+
+        <p>
+            Malware poses a serious threat, with hackers using it to steal sensitive information, take control of devices, or disrupt systems. Analysing network traffic is one of the best ways to catch these threats early, but it can be slow and complex. I chose Scapy because it allows detailed inspection of network packets, making it easier to spot signs of malice, such as unusual communication patterns or hidden data transfers. My goal was to create a tool that is straightforward, ethical, and reliable, helping security teams protect networks without being overwhelmed by incorrect alerts.
+        </p>
+
+        <h2>How It Works</h2>
+
+        <p>
+            The tool analyses network traffic captured in files called PCAPs, which are created by software like Wireshark. It looks for specific signs of malicious activity to identify threats. One key method is detecting command and control, or C2, beaconing. This happens when a compromised device sends regular, timed messages to an attacker’s server, almost like a heartbeat. The tool checks for consistent intervals, such as packets sent every few seconds or minutes, which suggest a device is being remotely controlled. By setting strict thresholds, like requiring highly regular timing, it avoids flagging normal traffic, such as routine website checks, keeping false positives low.
+        </p>
+
+        <p>
+            Another important method is DNS anomaly detection. DNS is how devices translate website names into addresses, but malware can misuse it. For example, some malware smuggles data out through DNS queries, a trick called DNS tunnelling, by packing unusual amounts of data into these requests. The tool spots this by looking for queries that carry too much information. It also checks for algorithmically generated domain names, known as DGAs, which malware uses to hide its communications. These domains often have odd patterns, like too many consonants or random-looking letters. By flagging queries with high consonant ratios or frequent failed lookups, the tool identifies potential threats while ignoring legitimate DNS activity, such as browsing trusted websites.
+        </p>
+
+        <p>
+            Data exfiltration is another focus, where malware sends sensitive information, like passwords or files, to an attacker. The tool looks for unusual outbound traffic, such as large data transfers to unfamiliar destinations, or connections with far more data leaving than coming in. It also checks for strange encoding patterns that might hide data, which malware uses to slip past security. By comparing traffic to normal patterns and focusing on extreme cases, the tool catches these attempts without mistaking regular activities, like streaming videos, for malicious ones.
+        </p>
+
+        <p>
+            The tool also examines protocol anomalies, which are oddities in how network data is structured. For instance, it flags packets with unusual settings, like suspicious combinations of TCP flags, which might indicate an attack. It also looks for packets with abnormal headers or sizes, or communications on unexpected ports, which could signal unauthorised access. By focusing on significant deviations from standard behaviour, the tool ensures that normal variations, such as those from different software, aren’t flagged incorrectly.
+        </p>
+
+        <p>
+            To make the tool more accurate, I included a whitelisting feature. This lets users mark trusted IP addresses and domains, such as internal servers or well-known websites, so they’re ignored during analysis. For example, a company’s email server can be whitelisted to prevent it from being flagged as suspicious, even if it sends regular messages. This reduces false positives by ensuring the tool focuses only on untrusted traffic, making results more reliable for security teams.
+        </p>
+
+        <p>
+            The tool also uses external services like AbuseIPDB, a community database that tracks IP addresses linked to malicious activity. Users can enter an API key to check IPs in their traffic against this database, helping confirm whether a suspicious address is known to be harmful. For privacy, this feature is optional, so users can skip it if they don’t want to share data externally. When used, it adds an extra layer of confidence to the tool’s findings, as it cross-references with real-world reports, but the tool still works effectively without it by relying on its own analysis.
+        </p>
+
+        <h2>Keeping Networks Safe and Accurate</h2>
+
+        <p>
+            By combining these methods, the tool effectively spots malicious activity while keeping false positives to a minimum. The C2 detection catches most regular communication patterns, only flagging those with highly consistent timing to avoid mistaking normal updates for threats. DNS anomaly detection identifies unusual queries with high accuracy, focusing on extreme cases like data-heavy tunnelling or random-looking domains, so regular browsing isn’t affected. Data exfiltration analysis targets significant outbound transfers, ignoring typical user activities like file uploads to trusted cloud services. Protocol anomaly detection flags only major deviations, ensuring standard network variations aren’t mislabelled.
+        </p>
+
+        <p>
+            The whitelist feature is key to accuracy, letting users exclude trusted sources and reduce unnecessary alerts. For example, a busy internal server won’t trigger warnings, even if its traffic looks unusual. The optional AbuseIPDB integration adds reliability by confirming suspicious IPs against a trusted database, but the tool’s own analysis is robust enough to stand alone. Together, these features ensure the tool provides clear, actionable results, helping security teams focus on real threats without sifting through false alarms.
+        </p>
+
+        <h2>Limitations</h2>
+
+        <p>
+            The tool has some limitations. Analysing large PCAP files can be slow and resource-heavy, especially on older computers, which might delay results. It struggles with encrypted traffic, like HTTPS, because it can’t see the content of these packets, limiting its ability to spot threats hidden in secure connections. Without a baseline of normal traffic, it can be hard to be certain what’s malicious, as some legitimate activity might look suspicious in complex networks. Sophisticated malware can also use tricks to hide from detection, such as changing its patterns or spoofing IP addresses, which makes it harder to catch. The tool requires some networking knowledge to interpret results fully, and it may not fit easily into existing security systems, especially for large networks where performance can suffer.
+        </p>
+
+        <h2>Conclusion</h2>
+
+        <p>
+            This project shows how Scapy can simplify network forensics, making it easier to spot malware in traffic while keeping results accurate and trustworthy. By focusing on key threats like C2 beaconing, DNS anomalies, data exfiltration, and protocol issues, and using features like whitelisting and optional APIs, the tool helps protect networks without overwhelming users with false alerts. Despite limitations like encrypted traffic and processing demands, it’s a practical step towards safer digital environments. I’m keen to keep improving it, perhaps by tackling encrypted data or scaling it for larger networks, to make it even more useful for security teams.
+        </p>
+    </div>
+</body>
+</html>
